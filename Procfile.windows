@@ -1,0 +1,1 @@
+web: python pythonBotTask1.py
