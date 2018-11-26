@@ -23,7 +23,7 @@ def start(message):
 				mess += "\nFirst name: " + row[2]
 				if row[3] != "-":
 					mess += "\nLast name: " + row[3]
-				mess += "\nFirst message: \"" + row[5] +"\""
+				mess += "\nFirst message: \"" + row[4] +"\""
 				bot.send_message(message.chat.id, mess)
 				break
 
