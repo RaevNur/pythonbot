@@ -1,16 +1,63 @@
-import telebot, os, logging
+import telebot, os, logging, psycopg2
 from flask import Flask, request
 
 TOKEN = "739393314:AAHWAmhb3lYsP-j2xhlejFMbojqXhRZigMo"
 bot = telebot.TeleBot(TOKEN)
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+cur = conn.cursor()
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, 'Hello, ' + message.from_user.first_name)
+	cur.execute("SELECT * FROM Users")
+	while True:
+		row = cur.fetchone()
+		if row == None:
+			bot.send_message(message.chat.id, 'Hello, ' + message.from_user.first_name)
+			break
+		else:
+			if row[0] == message.from_user.id:
+				mess = "ID: " + str(row[0])
+				if row[1] != "-":
+					mess += "\nUsername: " + row[1]
+				mess += "\nFirst name: " + row[2]
+				if row[3] != "-":
+					mess += "\nLast name: " + row[3]
+				mess += "\nFirst message: \"" + row[5] +"\""
+				bot.send_message(message.chat.id, mess)
+				break
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
-    bot.reply_to(message, message.text)
+	cur.execute("SELECT * FROM Users")
+	while True:
+		row = cur.fetchone()
+		if row == None:
+			mess = 'INSERT INTO Users VALUES(' + str(row[0])
+			if message.from_user.username != None:
+				mess += ', \'' + message.from_user.username + '\', \''
+			else:
+				mess += ', \'-\', \''
+			mess += message.from_user.first_name + '\', \''
+			if message.from_user.last_name != None:
+				mess += message.from_user.last_name + '\', \''
+			else:
+				mess += '-\', \''
+			mess += message.text + '\')'
+			cur.execute(mess)
+			conn.commit()
+			break
+		else:
+			if row[0] == message.from_user.id:
+				mess = "ID: " + str(row[0])
+				if row[1] != "-":
+					mess += "\nUsername: " + row[1]
+				mess += "\nFirst name: " + row[2]
+				if row[3] != "-":
+					mess += "\nLast name: " + row[3]
+				mess += "\nFirst message: \"" + row[5] +"\""
+				bot.send_message(message.chat.id, mess)
+				break
 
 
 if "HEROKU" in list(os.environ.keys()):
