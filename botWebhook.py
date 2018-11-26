@@ -33,7 +33,7 @@ def echo_message(message):
 	while True:
 		row = cur.fetchone()
 		if row == None:
-			mess = 'INSERT INTO Users VALUES(' + str(row[0])
+			mess = 'INSERT INTO Users VALUES(' + str(message.from_user.id)
 			if message.from_user.username != None:
 				mess += ', \'' + message.from_user.username + '\', \''
 			else:
@@ -46,6 +46,7 @@ def echo_message(message):
 			mess += message.text + '\')'
 			cur.execute(mess)
 			conn.commit()
+			bot.send_message(message.chat.id, 'Hello, ' + message.from_user.first_name)
 			break
 		else:
 			if row[0] == message.from_user.id:
