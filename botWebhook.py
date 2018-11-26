@@ -46,7 +46,7 @@ def echo_message(message):
 			mess += message.text + '\')'
 			cur.execute(mess)
 			conn.commit()
-			bot.send_message(message.chat.id, 'Hello, ' + message.from_user.first_name)
+			bot.send_message(message.chat.id, "Ваши данные в базеданных")
 			break
 		else:
 			if row[0] == message.from_user.id:
@@ -56,7 +56,7 @@ def echo_message(message):
 				mess += "\nFirst name: " + row[2]
 				if row[3] != "-":
 					mess += "\nLast name: " + row[3]
-				mess += "\nFirst message: \"" + row[5] +"\""
+				mess += "\nFirst message: \"" + row[4] +"\""
 				bot.send_message(message.chat.id, mess)
 				break
 
